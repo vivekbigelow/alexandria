@@ -1,0 +1,8 @@
+h1 {
+    font-style: italic;
+}
+.bookListItem {
+    color: grey;
+    padding-top: 3px;
+    font-size: 15px;
+}

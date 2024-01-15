@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import BookListItem from './components/BookListItem';
+import bookService from './services/books';
 import axios from 'axios';
 
 const App = () => {
@@ -7,13 +8,11 @@ const App = () => {
   const [newBookTitle, setNewBookTitle] = useState('enter book details...')
 
   useEffect(() => {
-    console.log('effect')
-    axios 
-      .get('http://localhost:3001/books')
-      .then(response => {
-        console.log('promise fulfilled');
-        setBooks(response.data);
-      })
+    bookService
+      .getAll()
+      .then(initialBooks => {
+          setBooks(initialBooks)
+        })
   }, [])
 
   const addBook = (event) => {
@@ -22,14 +21,12 @@ const App = () => {
       title: newBookTitle,
       author: 'John Doe'
     };
-    axios
-      .post('http://localhost:3001/books', newBook)
-      .then( response => {
-        setBooks(books.concat(response.data));
+    bookService
+      .create(newBook)
+      .then(returnedBook => {
+        setBooks(books.concat(returnedBook))
         setNewBookTitle('');
-        console.log(response);
       })
-    console.log('Button Pressed', event.target)
   }
 
   const handleBookChange = (event) => {
