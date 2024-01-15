@@ -1,9 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import BookListItem from './components/BookListItem';
+import axios from 'axios';
 
-const App = (props) => {
-  const [books, setBooks] = useState(props.books);
+const App = () => {
+  const [books, setBooks] = useState([]);
   const [newBookTitle, setNewBookTitle] = useState('enter book details...')
+
+  useEffect(() => {
+    console.log('effect')
+    axios 
+      .get('http://localhost:3001/books')
+      .then(response => {
+        console.log('promise fulfilled');
+        setBooks(response.data);
+      })
+  }, [])
 
   const addBook = (event) => {
     event.preventDefault();
