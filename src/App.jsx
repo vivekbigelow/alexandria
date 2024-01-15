@@ -19,12 +19,16 @@ const App = () => {
   const addBook = (event) => {
     event.preventDefault();
     const newBook = {
-      id: books.length + 1,
       title: newBookTitle,
       author: 'John Doe'
     };
-    setBooks(books.concat(newBook));
-    setNewBookTitle('');
+    axios
+      .post('http://localhost:3001/books', newBook)
+      .then( response => {
+        setBooks(books.concat(response.data));
+        setNewBookTitle('');
+        console.log(response);
+      })
     console.log('Button Pressed', event.target)
   }
 
