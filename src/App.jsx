@@ -1,20 +1,32 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import BookListItem from './components/BookListItem';
+import bookService from './services/books';
+import axios from 'axios';
 
-const App = (props) => {
-  const [books, setBooks] = useState(props.books);
+const App = () => {
+  const [books, setBooks] = useState([]);
   const [newBookTitle, setNewBookTitle] = useState('enter book details...')
+
+  useEffect(() => {
+    bookService
+      .getAll()
+      .then(initialBooks => {
+          setBooks(initialBooks)
+        })
+  }, [])
 
   const addBook = (event) => {
     event.preventDefault();
     const newBook = {
-      id: books.length + 1,
       title: newBookTitle,
       author: 'John Doe'
     };
-    setBooks(books.concat(newBook));
-    setNewBookTitle('');
-    console.log('Button Pressed', event.target)
+    bookService
+      .create(newBook)
+      .then(returnedBook => {
+        setBooks(books.concat(returnedBook))
+        setNewBookTitle('');
+      })
   }
 
   const handleBookChange = (event) => {
