@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import BookListItem from './components/BookListItem';
+import Notification from './components/Notification';
 import bookService from './services/books';
-import axios from 'axios';
 
 const App = () => {
   const [books, setBooks] = useState([]);
-  const [newBookTitle, setNewBookTitle] = useState('enter book details...')
+  const [newBook, setNewBook] = useState({title: 'title', author: 'author'});
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     bookService
@@ -17,21 +18,29 @@ const App = () => {
 
   const addBook = (event) => {
     event.preventDefault();
-    const newBook = {
-      title: newBookTitle,
-      author: 'John Doe'
-    };
-    bookService
-      .create(newBook)
-      .then(returnedBook => {
-        setBooks(books.concat(returnedBook))
-        setNewBookTitle('');
-      })
+    if (newBook.title === null 
+        || newBook.author === null 
+        || newBook.title === 'title' 
+        || newBook.author === 'author'){
+      setErrorMessage('Please fill out all of the fields in the form below.')
+    }
+    else {
+      setErrorMessage('')
+      bookService
+        .create(newBook)
+        .then(returnedBook => {
+          setBooks(books.concat(returnedBook))
+          setNewBook({title: 'title', author: 'author'})
+        })
+    }
   }
 
-  const handleBookChange = (event) => {
-    console.log(event.target.value);
-    setNewBookTitle(event.target.value);
+  const handleTitleChange = (e) => {
+    setNewBook({ ...newBook, title: e.target.value })
+  }
+
+  const handleAuthorChange = (e) => {
+    setNewBook({ ...newBook, author:e.target.value })
   }
   
   return (
@@ -43,8 +52,10 @@ const App = () => {
           <BookListItem book = {book} key={book.id} />
         )}
       </ul>
+      <Notification message={errorMessage} />
       <form onSubmit={addBook}>
-          <input value={newBookTitle} onChange={handleBookChange} />
+          <input value={newBook.title} onChange={handleTitleChange} />
+          <input value={newBook.author} onChange={handleAuthorChange} />
           <button type="submit">Add book</button> 
       </form>
     </>
